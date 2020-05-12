@@ -1,0 +1,31 @@
+kind: Template
+apiVersion: v1
+metadata:
+  name: my-template
+labels:
+  template: my-template
+objects:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app: "${NAME}"
+    name: "${NAME}"
+  spec:
+    replicas: 2
+    selector:
+      matchLabels:
+        app: "${NAME}"
+    template:
+      metadata:
+        labels:
+          app: "${NAME}"
+      spec:
+        containers:
+        - image: nginxinc/nginx-unprivileged:latest
+          name: "${NAME}"
+parameters:
+- name: NAME
+  displayName: Name
+  required: true
+  value: my-nginx-from-template
