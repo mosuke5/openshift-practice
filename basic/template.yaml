@@ -22,10 +22,15 @@ objects:
           app: "${NAME}"
       spec:
         containers:
-        - image: nginxinc/nginx-unprivileged:latest
+        - image: "${IMAGE}:${TAG}"
           name: "${NAME}"
 parameters:
 - name: NAME
-  displayName: Name
   required: true
-  value: my-nginx-from-template
+  value: "my-nginx-from-template"
+- name: IMAGE
+  required: true
+  value: "nginxinc/nginx-unprivileged"
+- name: TAG
+  required: true
+  value: "latest"
