@@ -50,7 +50,7 @@ spec:
           kind: ClusterTriggerBinding
       template:
         # 参照するTriggerTemplateを指定
-        ref: build-deploy-pipeline-trigger-template
+        ref: build-deploy-pipeline
       interceptors:
         - github:
             # 前手順で作成したシークレットの指定
