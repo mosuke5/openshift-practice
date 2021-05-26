@@ -1,0 +1,19 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: multi-steps-task
+spec:
+  steps:
+    - name: first-output
+      image: fedora:31
+      command: ["echo"]
+      args: ["hello first step"]
+    - name: second-output
+      image: fedora:32
+      command: ["echo"]
+      args: ["hello second step"]
+    - name: third-output
+      image: fedora:33
+      command: ["echo"]
+      args: ["hello third step"]
+

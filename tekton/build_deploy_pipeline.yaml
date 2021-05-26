@@ -1,0 +1,78 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-deploy-pipeline
+spec:
+  workspaces: 
+    - name: shared-workspace
+  params:
+    - name: git-url
+      type: string
+    - name: git-revision
+      type: string
+      default: "main"
+    - name: image
+      type: string
+    - name: image-tag
+      type: string
+      default: "latest"
+    - name: context
+      type: string
+      default: "tekton/sample_web"
+    - name: manifest_dir
+      type: string
+      default: "manifests"
+  tasks:
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: $(params.git-url)
+        - name: deleteExisting
+          value: "true"
+        - name: revision
+          value: $(params.git-revision)
+    - name: build-push-image
+      taskRef:
+        name: buildah
+        kind: ClusterTask
+      params:
+        - name: IMAGE
+          value: $(params.image):$(params.image-tag)
+        - name: DOCKERFILE
+          value: "Dockerfile"
+        - name: CONTEXT
+          value: "$(workspaces.source.path)/$(params.context)"
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      runAfter:
+        - fetch-repository
+    - name: deploy-application
+      taskRef:
+        name: apply-manifests
+      params:
+        - name: script
+          value: |
+            cd $(workspaces.source.path)
+            echo "参考用出力: image-digestが前のTaskで生成されていることを確認"
+            ls -l
+            echo "参考用出力: image-digestを確認"
+            cat image-digest
+
+            echo "テンプレートを展開してデプロイ"
+            oc process -f $(params.context)/$(params.manifest_dir)/ \
+              -p APP_IMAGE=$(params.image) \
+              -p APP_IMAGE_DIGEST=`cat image-digest` \
+              | oc apply -f -
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      runAfter:
+        - build-push-image
+

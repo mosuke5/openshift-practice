@@ -1,0 +1,62 @@
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: build-deploy-pipeline
+spec:
+  params:
+    - name: git-revision
+      description: The git revision
+      default: main
+    - name: git-repo-url
+      description: The git repository url
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        generateName: build-deploy-pipeline-run-
+      spec:
+        # 呼び出すPipelineの指定
+        pipelineRef:
+          name: build-deploy-pipeline
+        params: 
+          - name: git-url
+            value: $(tt.params.git-repo-url)
+          - name: git-revision
+            value: $(tt.params.git-revision)
+          - name: image
+            value: image-registry.openshift-image-registry.svc:5000/20210527-tekton/my-web
+        workspaces: 
+          - name: shared-workspace
+            volumeClaimTemplate:
+              spec:
+                accessModes:
+                  - ReadWriteOnce
+                resources:
+                  requests:
+                    storage: 1Gi
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: build-deploy-pipeline
+spec:
+  # 前手順で作成したService Accountの指定
+  serviceAccountName: trigger
+  triggers:
+    - bindings:
+        # OpenShift Pipelinesで登録済みのClusterTriggerBindingを活用
+        - ref: github-push
+          kind: ClusterTriggerBinding
+      template:
+        # 参照するTriggerTemplateを指定
+        ref: build-deploy-pipeline-trigger-template
+      interceptors:
+        - github:
+            # 前手順で作成したシークレットの指定
+            secretRef:
+              secretName: github-webhook
+              secretKey: secretkey
+            # GitHubのpushイベントのみでトリガー
+            eventTypes:
+              - push

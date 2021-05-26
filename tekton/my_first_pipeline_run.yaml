@@ -1,0 +1,19 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: my-first-pipeline-run
+spec:
+  # 利用するPipelineの選択
+  pipelineRef:
+    name: my-first-pipeline
+  # Pipeline実行に利用するパラメータ
+  params:
+    - name: my-name
+      value: openshift-tettei-nyumon
+    - name: my-friends
+      value:
+        - kubernetes
+        - etcd
+        - api-server
+        - scheduler
+        - controller-manager

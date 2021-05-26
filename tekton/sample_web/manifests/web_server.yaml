@@ -1,0 +1,59 @@
+---
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: openshift-practice-web
+labels:
+  template: openshift-practice-web
+  app: openshift-practice-web
+objects:
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: "${NAME}"
+    spec:
+      ports:
+        - name: web
+          port: 8080
+          targetPort: 8080
+      selector:
+        app: "${NAME}"
+  - kind: Route
+    apiVersion: v1
+    metadata:
+      name: "${NAME}"
+    spec:
+      to:
+        kind: Service
+        name: "${NAME}"
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: "${NAME}"
+      name: "${NAME}"
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+         app: "${NAME}"
+      template:
+        metadata:
+          labels:
+            app: "${NAME}"
+        spec:
+          containers:
+            - image: "${APP_IMAGE}@${APP_IMAGE_DIGEST}"
+              name: web
+parameters:
+ - name: NAME
+   displayName: Name
+   required: true
+   value: openshift-practice-web
+ - name: APP_IMAGE
+   required: true
+   value: image-registry.openshift-image-registry.svc:5000/tekton-practice/my-web
+ - name: APP_IMAGE_DIGEST
+   displayName: Application Image digest value
+   required: true

@@ -1,0 +1,23 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: build-deploy-pipeline-run
+spec:
+  pipelineRef:
+    name: build-deploy-pipeline
+  params: 
+    - name: git-url
+      value: https://github.com/mosuke5/openshift-tettei-nyumon
+    - name: git-revision
+      value: main
+    - name: image
+      value: image-registry.openshift-image-registry.svc:5000/tekton-practice/my-web
+  workspaces: 
+    - name: shared-workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi

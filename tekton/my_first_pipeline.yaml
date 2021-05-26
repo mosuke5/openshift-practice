@@ -1,0 +1,58 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: my-first-pipeline
+spec:
+  # Pipelineに引き渡せるパラメータ定義
+  params:
+    - name: my-name
+      type: string
+    - name: my-friends
+      type: array
+  # Pipelineの実行内容。Taskの集合体。
+  tasks:
+    - name: hello-my-name
+      taskRef:
+        name: hello-my-name-task
+      params:
+        - name: my-name
+          value: "$(params.my-name)"
+    - name: hello-my-friends
+      taskRef:
+        name: hello-my-friends-task
+      params:
+        - name: my-friends
+          value: ["$(params.my-friends[*])"]
+      runAfter:
+        - hello-my-name
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: hello-my-name-task
+spec:
+  params:
+    - name: my-name
+      type: string
+      description: My name
+      default: openshift-tettei-nyumon
+  steps:
+    - name: output-hell-my-name
+      image: fedora:latest
+      command: ["echo"]
+      args: ["hello $(params.my-name)"]
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: hello-my-friends-task
+spec:
+  params:
+    - name: my-friends
+      description: My friends name
+      type: array
+  steps:
+    - name: output-hell-my-friends
+      image: fedora:latest
+      command: ["echo"]
+      args: ["hello", "$(params.my-friends[*])"]
