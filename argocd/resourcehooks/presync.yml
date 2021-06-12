@@ -17,3 +17,10 @@ spec:
           - "date && echo 'presync'"
       restartPolicy: Never
   backoffLimit: 2
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: precm
+  annotations:
+    argocd.argoproj.io/hook: PreSync
