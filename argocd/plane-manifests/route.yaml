@@ -1,0 +1,12 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: my-nginx
+spec:
+  port:
+    targetPort: web
+  to:
+    kind: Service
+    name: my-nginx
+    weight: 100
+  wildcardPolicy: None
