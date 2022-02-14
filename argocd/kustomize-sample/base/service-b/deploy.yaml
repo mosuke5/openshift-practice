@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx-b
+  name: nginx-b
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-b
+  template:
+    metadata:
+      labels:
+        app: nginx-b
+    spec:
+      containers:
+        - image: nginx-b:latest
+          name: nginx-b
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nginx-b
+spec:
+  ports:
+  - name: web
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: nginx-b
