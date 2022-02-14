@@ -1,5 +1,7 @@
 bases:
   - ../base
+resources:
+  - additional-resource.yaml
 images:
   - name: nginx-a
     newName: nginxinc/nginx-unprivileged
