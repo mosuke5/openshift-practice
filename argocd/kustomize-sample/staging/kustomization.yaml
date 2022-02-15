@@ -1,6 +1,5 @@
-bases:
-  - ../base
 resources:
+  - ../base
   - additional-resource.yaml
 images:
   - name: nginx-a
