@@ -25,3 +25,4 @@ metadata:
   name: precm
   annotations:
     argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "-2"
