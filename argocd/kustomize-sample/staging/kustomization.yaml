@@ -4,7 +4,7 @@ resources:
 images:
   - name: nginx-a
     newName: nginxinc/nginx-unprivileged
-    newTag: "stg-1.19"
+    newTag: "1.19"
   - name: nginx-b
     newName: nginxinc/nginx-unprivileged
-    newTag: "stg-1.20"
+    newTag: "1.20"
