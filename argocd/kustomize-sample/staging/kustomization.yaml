@@ -3,8 +3,8 @@ resources:
   - additional-resource.yaml
 images:
   - name: nginx-a
-    newName: nginxinc/nginx-unprivileged
-    newTag: "1.19"
+    newName: quay.io/packit/nginx-unprivileged
+    newTag: "latest"
   - name: nginx-b
-    newName: nginxinc/nginx-unprivileged
-    newTag: "1.20"
+    newName: quay.io/packit/nginx-unprivileged
+    newTag: "latest"
