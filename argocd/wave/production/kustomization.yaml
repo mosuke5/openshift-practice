@@ -1,0 +1,9 @@
+resources:
+  - ../base
+images:
+  - name: nginx-a
+    newName: nginxinc/nginx-unprivileged
+    newTag: "prod-1.19"
+  - name: nginx-b
+    newName: nginxinc/nginx-unprivileged
+    newTag: "prod-1.20"
