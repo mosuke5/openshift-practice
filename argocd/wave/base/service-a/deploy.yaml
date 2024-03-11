@@ -19,6 +19,12 @@ spec:
       containers:
         - image: nginx-a:latest
           name: nginx-a
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            failureThreshold: 30
+            periodSeconds: 30
 ---
 kind: Service
 apiVersion: v1
