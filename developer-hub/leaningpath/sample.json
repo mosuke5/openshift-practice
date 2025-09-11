@@ -1,0 +1,30 @@
+[
+  {
+    "paths": 1,
+    "minutes": 30,
+    "description": "Gitの超入門",
+    "label": "サル先生のGit入門",
+    "url": "https://backlog.com/ja/git-tutorial/"
+  },
+  {
+    "paths": 2,
+    "minutes": 30,
+    "description": "Helpful Linux commands (Admin 101)",
+    "label": "Helpful Linux commands (Admin 101)",
+    "url": "https://www.redhat.com/en/interactive-labs/helpful-linux-commands"
+  },
+  {
+    "paths": 3,
+    "minutes": 30,
+    "description": "Use file permissions (Admin 101)",
+    "label": "Use file permissions (Admin 101)",
+    "url": "https://www.redhat.com/en/interactive-labs/use-file-permissions"
+  },
+  {
+    "paths": 4,
+    "minutes": 240,
+    "description": "OpenShiftのおすすめ書籍",
+    "label": "OpenShift徹底入門",
+    "url": "OpenShift徹底入門"
+  }
+]
