@@ -1,0 +1,198 @@
+# ==========================================
+# 組織構造の定義
+# ==========================================
+
+# ユーザーの組織単位
+dn: ou=people,dc=example,dc=com
+objectClass: organizationalUnit
+ou: people
+
+# 営業本部
+dn: ou=sales-division,ou=people,dc=example,dc=com
+objectClass: organizationalUnit
+ou: sales-division
+description: Sales Division
+
+# 営業本部 - 法人営業部
+dn: ou=corporate-sales,ou=sales-division,ou=people,dc=example,dc=com
+objectClass: organizationalUnit
+ou: corporate-sales
+description: Corporate Sales Department
+
+# 営業本部 - 戦略部
+dn: ou=strategy,ou=sales-division,ou=people,dc=example,dc=com
+objectClass: organizationalUnit
+ou: strategy
+description: Strategy Department
+
+# システム本部
+dn: ou=it-division,ou=people,dc=example,dc=com
+objectClass: organizationalUnit
+ou: it-division
+description: IT Division
+
+# システム本部 - 開発部
+dn: ou=development,ou=it-division,ou=people,dc=example,dc=com
+objectClass: organizationalUnit
+ou: development
+description: Development Department
+
+# システム本部 - 運用部
+dn: ou=operations,ou=it-division,ou=people,dc=example,dc=com
+objectClass: organizationalUnit
+ou: operations
+description: Operations Department
+
+# ==========================================
+# ユーザーの定義
+# ==========================================
+
+# 営業本部 法人営業部 - 山田太郎（課長）
+dn: uid=yamada.taro,ou=corporate-sales,ou=sales-division,ou=people,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: yamada.taro
+cn: Taro Yamada
+sn: Yamada
+givenName: Taro
+displayName: 山田 太郎
+mail: yamada.taro@example.com
+telephoneNumber: +81-3-1234-5678
+mobile: +81-90-1234-5678
+title: Corporate Sales Manager
+departmentNumber: 1100
+employeeNumber: EMP001
+employeeType: Full-time
+ou: corporate-sales
+description: Corporate Sales Manager
+userPassword: test1234
+uidNumber: 10001
+gidNumber: 20001
+homeDirectory: /home/yamada.taro
+loginShell: /bin/bash
+
+# 営業本部 戦略部 - 鈴木花子（戦略企画担当）
+dn: uid=suzuki.hanako,ou=strategy,ou=sales-division,ou=people,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: suzuki.hanako
+cn: Hanako Suzuki
+sn: Suzuki
+givenName: Hanako
+displayName: 鈴木 花子
+mail: suzuki.hanako@example.com
+telephoneNumber: +81-3-1234-5679
+mobile: +81-90-1234-5679
+title: Strategy Planner
+departmentNumber: 1200
+employeeNumber: EMP002
+employeeType: Full-time
+ou: strategy
+description: Strategy Planning Specialist
+userPassword: test1234
+uidNumber: 10002
+gidNumber: 20002
+homeDirectory: /home/suzuki.hanako
+loginShell: /bin/bash
+
+# システム本部 開発部 - 田中次郎（シニアエンジニア）
+dn: uid=tanaka.jiro,ou=development,ou=it-division,ou=people,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: tanaka.jiro
+cn: Jiro Tanaka
+sn: Tanaka
+givenName: Jiro
+displayName: 田中 次郎
+mail: tanaka.jiro@example.com
+telephoneNumber: +81-3-1234-5680
+mobile: +81-90-1234-5680
+title: Senior Software Engineer
+departmentNumber: 2100
+employeeNumber: EMP003
+employeeType: Full-time
+ou: development
+description: Senior Software Engineer - Infrastructure
+userPassword: test1234
+uidNumber: 10003
+gidNumber: 20003
+homeDirectory: /home/tanaka.jiro
+loginShell: /bin/bash
+
+# システム本部 開発部 - 小林真希（ソフトウェアエンジニア）
+dn: uid=kobayashi.maki,ou=development,ou=it-division,ou=people,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: kobayashi.maki
+cn: Maki Kobayashi
+sn: Kobayashi
+givenName: Maki
+displayName: 小林 真希
+mail: kobayashi.maki@example.com
+telephoneNumber: +81-3-1234-5681
+mobile: +81-90-1234-5681
+title: Software Engineer
+departmentNumber: 2100
+employeeNumber: EMP004
+employeeType: Full-time
+ou: development
+description: Software Engineer - Application Development
+userPassword: test1234
+uidNumber: 10004
+gidNumber: 20003
+homeDirectory: /home/kobayashi.maki
+loginShell: /bin/bash
+
+# システム本部 運用部 - 高橋健二（運用マネージャー）
+dn: uid=takahashi.kenji,ou=operations,ou=it-division,ou=people,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: takahashi.kenji
+cn: Kenji Takahashi
+sn: Takahashi
+givenName: Kenji
+displayName: 高橋 健二
+mail: takahashi.kenji@example.com
+telephoneNumber: +81-3-1234-5682
+mobile: +81-90-1234-5682
+title: Operations Manager
+departmentNumber: 2200
+employeeNumber: EMP005
+employeeType: Full-time
+ou: operations
+description: IT Operations Manager
+userPassword: test1234
+uidNumber: 10005
+gidNumber: 20004
+homeDirectory: /home/takahashi.kenji
+loginShell: /bin/bash
+
+# システム本部 運用部 - 渡辺愛（運用エンジニア）
+dn: uid=watanabe.ai,ou=operations,ou=it-division,ou=people,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: watanabe.ai
+cn: Ai Watanabe
+sn: Watanabe
+givenName: Ai
+displayName: 渡辺 愛
+mail: watanabe.ai@example.com
+telephoneNumber: +81-3-1234-5683
+mobile: +81-90-1234-5683
+title: Operations Engineer
+departmentNumber: 2200
+employeeNumber: EMP006
+employeeType: Full-time
+ou: operations
+description: IT Operations Engineer - Monitoring
+userPassword: test1234
+uidNumber: 10006
+gidNumber: 20004
+homeDirectory: /home/watanabe.ai
+loginShell: /bin/bash

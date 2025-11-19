@@ -1,0 +1,231 @@
+# OpenLDAP Kubernetes Manifest - All in One
+# このファイルには、OpenLDAPサーバとクライアントPodをデプロイするための全てのリソースが含まれています
+#
+# デプロイ方法:
+#   kubectl apply -f ldap-all-in-one.yaml
+#
+# 削除方法:
+#   kubectl delete -f ldap-all-in-one.yaml
+#
+---
+# Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ldap
+  labels:
+    name: ldap
+---
+# ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ldap-config
+  namespace: ldap
+data:
+  LDAP_ORGANISATION: "Example Company"
+  LDAP_DOMAIN: "example.com"
+  LDAP_READONLY_USER: "false"
+  LDAP_RFC2307BIS_SCHEMA: "false"
+  LDAP_BACKEND: "mdb"
+  LDAP_TLS: "true"
+  LDAP_TLS_VERIFY_CLIENT: "never"
+---
+# Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ldap-secret
+  namespace: ldap
+type: Opaque
+stringData:
+  LDAP_ADMIN_PASSWORD: "admin"
+  LDAP_CONFIG_PASSWORD: "config"
+---
+# PersistentVolumeClaim - Data
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ldap-data
+  namespace: ldap
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+# PersistentVolumeClaim - Config
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ldap-config-data
+  namespace: ldap
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 256Mi
+---
+# Deployment - OpenLDAP Server
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openldap
+  namespace: ldap
+  labels:
+    app: openldap
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openldap
+  template:
+    metadata:
+      labels:
+        app: openldap
+    spec:
+      containers:
+      - name: openldap
+        image: docker.io/osixia/openldap:latest
+        ports:
+        - name: ldap
+          containerPort: 389
+          protocol: TCP
+        - name: ldaps
+          containerPort: 636
+          protocol: TCP
+        env:
+        - name: LDAP_ORGANISATION
+          valueFrom:
+            configMapKeyRef:
+              name: ldap-config
+              key: LDAP_ORGANISATION
+        - name: LDAP_DOMAIN
+          valueFrom:
+            configMapKeyRef:
+              name: ldap-config
+              key: LDAP_DOMAIN
+        - name: LDAP_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: ldap-secret
+              key: LDAP_ADMIN_PASSWORD
+        - name: LDAP_CONFIG_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: ldap-secret
+              key: LDAP_CONFIG_PASSWORD
+        - name: LDAP_READONLY_USER
+          valueFrom:
+            configMapKeyRef:
+              name: ldap-config
+              key: LDAP_READONLY_USER
+        - name: LDAP_RFC2307BIS_SCHEMA
+          valueFrom:
+            configMapKeyRef:
+              name: ldap-config
+              key: LDAP_RFC2307BIS_SCHEMA
+        - name: LDAP_BACKEND
+          valueFrom:
+            configMapKeyRef:
+              name: ldap-config
+              key: LDAP_BACKEND
+        - name: LDAP_TLS
+          valueFrom:
+            configMapKeyRef:
+              name: ldap-config
+              key: LDAP_TLS
+        - name: LDAP_TLS_VERIFY_CLIENT
+          valueFrom:
+            configMapKeyRef:
+              name: ldap-config
+              key: LDAP_TLS_VERIFY_CLIENT
+        volumeMounts:
+        - name: ldap-data
+          mountPath: /var/lib/ldap
+        - name: ldap-config-data
+          mountPath: /etc/ldap/slapd.d
+        livenessProbe:
+          tcpSocket:
+            port: ldap
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: ldap
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: ldap-data
+        persistentVolumeClaim:
+          claimName: ldap-data
+      - name: ldap-config-data
+        persistentVolumeClaim:
+          claimName: ldap-config-data
+---
+# Service - OpenLDAP
+apiVersion: v1
+kind: Service
+metadata:
+  name: openldap
+  namespace: ldap
+  labels:
+    app: openldap
+spec:
+  type: ClusterIP
+  ports:
+  - name: ldap
+    port: 389
+    targetPort: 389
+    protocol: TCP
+  - name: ldaps
+    port: 636
+    targetPort: 636
+    protocol: TCP
+  selector:
+    app: openldap
+---
+# Pod - LDAP Client
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ldap-client
+  namespace: ldap
+  labels:
+    app: ldap-client
+spec:
+  containers:
+  - name: ldap-client
+    image: docker.io/osixia/openldap:latest
+    command:
+    - sleep
+    - infinity
+    env:
+    - name: LDAP_SERVER
+      value: "openldap.ldap.svc.cluster.local"
+    - name: LDAP_BASE_DN
+      value: "dc=example,dc=com"
+    - name: LDAP_ADMIN_DN
+      value: "cn=admin,dc=example,dc=com"
+    - name: LDAP_ADMIN_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: ldap-secret
+          key: LDAP_ADMIN_PASSWORD
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "100m"
+      limits:
+        memory: "128Mi"
+        cpu: "200m"
+  restartPolicy: Always
